@@ -6,7 +6,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 # check if user has git installed and propose to install if not installed
 if [ -d "/Library/Developer/CommandLineTools" ]; then
-        echo "You already have the Command Line Tools. Exiting..."
+        echo "You already have the Command Line Tools. Continuing with the next steps..."
 else
         XCODE_MESSAGE="$(osascript -e 'tell app "System Events" to display dialog "Please click install when Command Line Developer Tools appears"')"
         if [ "$XCODE_MESSAGE" = "button returned:OK" ]; then
@@ -26,8 +26,16 @@ echo ""
 
 echo "Xcode CLI tools OK"
 
-# curl -L https://nixos.org/nix/install > /tmp/install-nix.sh
-# sh /tmp/install-nix.sh --darwin-use-unencrypted-nix-store-volume
-# wait
+echo "Installinc nixpkg"
+curl -L https://nixos.org/nix/install > /tmp/install-nix.sh
+sh /tmp/install-nix.sh --darwin-use-unencrypted-nix-store-volume
+
+# Hack to use nixpkg directly
+echo "/Users/lucamaraschi/.nix-profile/etc/profile.d/nix.sh" >> ~/.profile
+. /Users/lucamaraschi/.nix-profile/etc/profile.d/nix.sh
+
+# Install cachix
+echo "Installing cachix..."
+nix-env -iA cachix -f https://cachix.org/api/v1/install
 
 echo '=========> OK <========='
